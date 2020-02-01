@@ -38,9 +38,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mobile.readyplayer.ui.ItemExplorer;
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     private List<ItemSongs> listOfSongs;
     public List<ItemPlaylist> listOfPlaylists;
+
     private ItemSongs currentSongItem;
 
     private ImageView ivSongImage;

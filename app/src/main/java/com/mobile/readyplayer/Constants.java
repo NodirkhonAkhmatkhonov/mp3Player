@@ -19,4 +19,6 @@ public class Constants {
     public static final int NOTIFICATION_CLOSE = 8;
 
     public static boolean ACTIVITY_ALIVE = true;
+
+    public static final String ROOT_PATH = "/storage/emulated/0";
 }
