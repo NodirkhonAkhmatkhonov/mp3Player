@@ -20,6 +20,8 @@ import java.util.List;
 
 public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyViewHolder> {
 
+    private AdapterExplorerCallBack adapterExplorerCallBack;
+    private Context context;
     private List<ItemExplorer> listOfFiles;
 
     @NonNull
@@ -30,19 +32,22 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
         return myViewHolder;
     }
 
-    public AdapterExplorer(List<ItemExplorer> listOfFiles) {
+    public AdapterExplorer(List<ItemExplorer> listOfFiles, Context context) {
         this.listOfFiles = listOfFiles;
+        adapterExplorerCallBack = (AdapterExplorerCallBack) context;
+        this.context = context;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
+        final int index = i;
         ItemExplorer itemExplorer = listOfFiles.get(i);
 
         myViewHolder.nameOfFile.setText(itemExplorer.getNameOfFile());
         myViewHolder.nameOfFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                adapterExplorerCallBack.onMethodCallBack(listOfFiles.get(index).getNameOfFile());
             }
         });
         myViewHolder.checkBox.setChecked(itemExplorer.isChecked());

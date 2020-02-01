@@ -3,8 +3,11 @@ package com.mobile.readyplayer.ui.explorer;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobile.readyplayer.ActivityPlaylistPage;
 import com.mobile.readyplayer.AdapterExplorer;
@@ -37,16 +40,45 @@ public class FragmentExplorer extends BaseFragment {
 
         listOfFiles = new ArrayList<>();
 
-        final File dir = new File(Constants.ROOT_PATH);
+        makeList();
+
+        adapterExplorer = new AdapterExplorer(listOfFiles, getContext());
+        recyclerViewFiles.setAdapter(adapterExplorer);
+
+        ///////////////////////////
+        adapterExplorer.notifyDataSetChanged();
+    }
+
+    private void makeList() {
+        final File dir = new File(Constants.MUTABLE_PATH);
         final File[] files = dir.listFiles();
 
         for (File file: files) {
-            if (!file.isHidden())
-            listOfFiles.add(new ItemExplorer(file.isDirectory(), file.getName(), file.getAbsolutePath()));
+            if (!file.isHidden()) {
+                listOfFiles.add(new ItemExplorer(file.isDirectory(), file.getName(), file.getAbsolutePath()));
+            }
         }
+    }
 
-        adapterExplorer = new AdapterExplorer(listOfFiles);
-        recyclerViewFiles.setAdapter(adapterExplorer);
+    private static String getMimeType(String fileUrl) {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(fileUrl);
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    }
+
+    public void openSubDirectory(String nameOfSubDirectory) {
+
+    }
+
+    public void backDirectory(String nameOfFile) {
+        listOfFiles.clear();
+
+//        String mutablePath = Constants.MUTABLE_PATH;
+//        int lastIndexOfSlash = mutablePath.lastIndexOf('/');
+//        Constants.MUTABLE_PATH = mutablePath.substring(0, lastIndexOfSlash);
+
+        Constants.MUTABLE_PATH += "/" + nameOfFile;
+        makeList();
+        adapterExplorer.notifyDataSetChanged();
     }
 
     @Override

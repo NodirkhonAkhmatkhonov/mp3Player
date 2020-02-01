@@ -21,4 +21,5 @@ public class Constants {
     public static boolean ACTIVITY_ALIVE = true;
 
     public static final String ROOT_PATH = "/storage/emulated/0";
+    public static String MUTABLE_PATH = ROOT_PATH;
 }
