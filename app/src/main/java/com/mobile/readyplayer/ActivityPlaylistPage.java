@@ -18,7 +18,7 @@ public class ActivityPlaylistPage extends AppCompatActivity implements AdapterEx
 
         fragmentExplorer = new FragmentExplorer();
 
-        openExplorerFragment();
+        openPlaylistFragment();
     }
 
     public void openPlaylistFragment() {

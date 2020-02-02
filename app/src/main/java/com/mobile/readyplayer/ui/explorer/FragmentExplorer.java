@@ -5,10 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.mobile.readyplayer.ActivityPlaylistPage;
 import com.mobile.readyplayer.AdapterExplorer;
 import com.mobile.readyplayer.Constants;
 import com.mobile.readyplayer.R;
@@ -28,8 +31,20 @@ public class FragmentExplorer extends BaseFragment {
     private ArrayList<String> listOfFormats;
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_options_explorer, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void initView(View view, Bundle savedInstanceState) {
         setToolbar(view);
+        setHasOptionsMenu(true);
         initializeFormats();
         recycleExplorerFiles(view);
     }
@@ -46,12 +61,18 @@ public class FragmentExplorer extends BaseFragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        setTitle();
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 outsideDirectory();
             }
         });
+    }
+
+    private void setTitle() {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(Constants.MUTABLE_PATH);
     }
 
     private void recycleExplorerFiles(View view) {
@@ -99,6 +120,9 @@ public class FragmentExplorer extends BaseFragment {
         int lastIndexOfSlash = mutablePath.lastIndexOf('/');
         Constants.MUTABLE_PATH = mutablePath.substring(0, lastIndexOfSlash);
 
+        // here title which shows the address of directory is changed by calling this method
+        setTitle();
+
         listOfFiles.clear();
         makeList();
         adapterExplorer.notifyDataSetChanged();
@@ -108,6 +132,9 @@ public class FragmentExplorer extends BaseFragment {
         listOfFiles.clear();
 
         Constants.MUTABLE_PATH += "/" + nameOfFile;
+
+        setTitle();
+
         makeList();
         adapterExplorer.notifyDataSetChanged();
     }

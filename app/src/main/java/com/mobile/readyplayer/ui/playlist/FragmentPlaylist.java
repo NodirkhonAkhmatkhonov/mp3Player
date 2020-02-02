@@ -1,7 +1,6 @@
 package com.mobile.readyplayer.ui.playlist;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
@@ -15,7 +14,7 @@ public class FragmentPlaylist extends BaseFragment {
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        button = view.findViewById(R.id.button);
+        button = view.findViewById(R.id.addAudio);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
