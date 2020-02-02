@@ -1,25 +1,23 @@
 package com.mobile.readyplayer.ui.explorer;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mobile.readyplayer.ActivityPlaylistPage;
 import com.mobile.readyplayer.AdapterExplorer;
-import com.mobile.readyplayer.AdapterPlaylist;
 import com.mobile.readyplayer.Constants;
-import com.mobile.readyplayer.MainActivity;
 import com.mobile.readyplayer.R;
 import com.mobile.readyplayer.base.BaseFragment;
 import com.mobile.readyplayer.ui.ItemExplorer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FragmentExplorer extends BaseFragment {
@@ -27,10 +25,33 @@ public class FragmentExplorer extends BaseFragment {
     private RecyclerView recyclerViewFiles;
     private AdapterExplorer adapterExplorer;
     private List<ItemExplorer> listOfFiles;
+    private ArrayList<String> listOfFormats;
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
+        setToolbar(view);
+        initializeFormats();
         recycleExplorerFiles(view);
+    }
+
+    private void initializeFormats() {
+        listOfFormats = new ArrayList<>(Arrays.asList(
+                "mp3", "wma", "wav", "mp2", "aac", "ac3", "au", "ogg", "flac"
+        ));
+    }
+
+    private void setToolbar(View view) {
+        Toolbar toolbar = view.findViewById(R.id.toolbarPlaylist);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                outsideDirectory();
+            }
+        });
     }
 
     private void recycleExplorerFiles(View view) {
@@ -55,26 +76,36 @@ public class FragmentExplorer extends BaseFragment {
 
         for (File file: files) {
             if (!file.isHidden()) {
-                listOfFiles.add(new ItemExplorer(file.isDirectory(), file.getName(), file.getAbsolutePath()));
+                String fileType;
+
+                if (file.isDirectory()) {
+                    fileType = "dir";
+                } else fileType = getType(file.getPath());
+
+                if (file.isDirectory() || listOfFormats.contains(fileType))
+                listOfFiles.add(new ItemExplorer(fileType, file.getName(), file.getAbsolutePath()));
             }
         }
     }
 
-    private static String getMimeType(String fileUrl) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(fileUrl);
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    private String getType(String path) {
+        return path.substring(path.lastIndexOf(".") + 1);
     }
 
-    public void openSubDirectory(String nameOfSubDirectory) {
+    public void outsideDirectory() {
+        if (Constants.MUTABLE_PATH.equals(Constants.ROOT_PATH)) return;
 
-    }
+        String mutablePath = Constants.MUTABLE_PATH;
+        int lastIndexOfSlash = mutablePath.lastIndexOf('/');
+        Constants.MUTABLE_PATH = mutablePath.substring(0, lastIndexOfSlash);
 
-    public void backDirectory(String nameOfFile) {
         listOfFiles.clear();
+        makeList();
+        adapterExplorer.notifyDataSetChanged();
+    }
 
-//        String mutablePath = Constants.MUTABLE_PATH;
-//        int lastIndexOfSlash = mutablePath.lastIndexOf('/');
-//        Constants.MUTABLE_PATH = mutablePath.substring(0, lastIndexOfSlash);
+    public void insideDirectory(String nameOfFile) {
+        listOfFiles.clear();
 
         Constants.MUTABLE_PATH += "/" + nameOfFile;
         makeList();

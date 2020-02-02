@@ -212,7 +212,7 @@
             app:layout_constraintRight_toRightOf="parent"
             />
 
-        <include layout="@layout/toolbar" />
+        <include layout="@layout/toolbar_main" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -40,16 +40,8 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
-        final int index = i;
-        ItemExplorer itemExplorer = listOfFiles.get(i);
+        final ItemExplorer itemExplorer = listOfFiles.get(i);
 
-        myViewHolder.nameOfFile.setText(itemExplorer.getNameOfFile());
-        myViewHolder.nameOfFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapterExplorerCallBack.onMethodCallBack(listOfFiles.get(index).getNameOfFile());
-            }
-        });
         myViewHolder.checkBox.setChecked(itemExplorer.isChecked());
         myViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -57,6 +49,20 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 myViewHolder.checkBox.setChecked(isChecked);
             }
         });
+
+        if (itemExplorer.getFileType().equals("dir")) {
+            myViewHolder.imageOfFile.setImageResource(R.drawable.ic_folder);
+        } else
+            myViewHolder.imageOfFile.setImageResource(R.drawable.ic_music);
+
+        myViewHolder.nameOfFile.setText(itemExplorer.getNameOfFile());
+        myViewHolder.nameOfFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapterExplorerCallBack.onMethodCallBack(itemExplorer.getNameOfFile());
+            }
+        });
+
     }
 
     @Override

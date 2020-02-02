@@ -9,7 +9,7 @@
     android:fitsSystemWindows="false"
     >
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar_main"/>
 
     <ImageView
         android:id="@+id/songImage"

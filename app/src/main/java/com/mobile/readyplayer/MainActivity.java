@@ -3,7 +3,6 @@ package com.mobile.readyplayer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,9 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,11 +35,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mobile.readyplayer.ui.ItemExplorer;
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);

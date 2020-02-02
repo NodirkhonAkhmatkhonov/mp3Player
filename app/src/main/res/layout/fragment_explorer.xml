@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    >
+
+    <include layout="@layout/toolbar_playlist"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewFiles"
@@ -11,4 +15,4 @@
         android:padding="10dp"
         />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

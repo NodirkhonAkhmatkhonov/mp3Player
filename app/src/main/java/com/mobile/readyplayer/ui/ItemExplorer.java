@@ -3,12 +3,12 @@ package com.mobile.readyplayer.ui;
 public class ItemExplorer {
 
     public boolean isChecked;
-    public boolean isFolder;
+    public String fileType;
     public String nameOfFile;
     public String absolutePath;
 
-    public ItemExplorer(boolean isFolder, String nameOfFile, String absolutePath) {
-        this.isFolder = isFolder;
+    public ItemExplorer(String fileType, String nameOfFile, String absolutePath) {
+        this.fileType = fileType;
         this.nameOfFile = nameOfFile;
         this.absolutePath = absolutePath;
     }
@@ -17,8 +17,8 @@ public class ItemExplorer {
         return isChecked;
     }
 
-    public boolean isFolder() {
-        return isFolder;
+    public String getFileType() {
+        return fileType;
     }
 
     public String getNameOfFile() {
