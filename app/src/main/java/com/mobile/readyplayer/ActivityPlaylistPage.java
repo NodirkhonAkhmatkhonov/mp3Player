@@ -18,13 +18,16 @@ public class ActivityPlaylistPage extends AppCompatActivity implements AdapterEx
 
         fragmentExplorer = new FragmentExplorer();
 
-        openPlaylistFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.container,  fragmentExplorer, "open_playlist_page")
+                .commit();
     }
 
     public void openPlaylistFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.container,  new FragmentPlaylist(), "open_playlist_page")
+                .replace(R.id.container,  new FragmentPlaylist(), "open_playlist_page")
                 .commit();
     }
 

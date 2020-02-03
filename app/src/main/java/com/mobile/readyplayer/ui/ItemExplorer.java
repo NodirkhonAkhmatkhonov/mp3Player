@@ -17,6 +17,10 @@ public class ItemExplorer {
         return isChecked;
     }
 
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
     public String getFileType() {
         return fileType;
     }

@@ -3,16 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/black"
-    >
+    android:background="@android:color/black">
 
     <include layout="@layout/toolbar_playlist"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewFiles"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp"
+    <CheckBox
+        android:id="@+id/chb_checkAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:padding="5dp"
         />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        >
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewFiles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorCheckFloatingActionButton"
+            android:src="@drawable/ic_check_black_32dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="20dp"
+            />
+    </RelativeLayout>
 </LinearLayout>

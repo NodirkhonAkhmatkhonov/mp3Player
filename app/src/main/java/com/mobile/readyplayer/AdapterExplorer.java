@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobile.readyplayer.ui.ItemExplorer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyViewHolder> {
@@ -23,12 +26,15 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     private AdapterExplorerCallBack adapterExplorerCallBack;
     private Context context;
     private List<ItemExplorer> listOfFiles;
+    private List<ItemExplorer> listOfCheckedFiles;
+    private MyViewHolder myViewHolder;
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_explorer, viewGroup, false);
-        MyViewHolder myViewHolder = new MyViewHolder(view);
+        myViewHolder = new MyViewHolder(view);
+        listOfCheckedFiles = new ArrayList<>();
         return myViewHolder;
     }
 
@@ -46,7 +52,11 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
         myViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                myViewHolder.checkBox.setChecked(isChecked);
+                if (isChecked) {
+                    listOfCheckedFiles.add(itemExplorer);
+                } else {
+                    listOfCheckedFiles.remove(itemExplorer);
+                }
             }
         });
 
@@ -63,6 +73,28 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
             }
         });
 
+    }
+
+    public void checkAllCheckBoxes(boolean isCheck) {
+
+        if (isCheck) {
+            for (ItemExplorer itemExplorer : listOfFiles) {
+                itemExplorer.setChecked(true);
+                myViewHolder.checkBox.setChecked(true);
+                listOfCheckedFiles.add(itemExplorer);
+                Log.d("test", "" + itemExplorer);
+            }
+        } else {
+            for (ItemExplorer itemExplorer : listOfFiles) {
+                itemExplorer.setChecked(false);
+                listOfCheckedFiles.clear();
+                myViewHolder.checkBox.setChecked(false);
+                listOfCheckedFiles.remove(itemExplorer);
+            }
+        }
+
+        Toast.makeText(context, "" + listOfCheckedFiles.size(), Toast.LENGTH_SHORT).show();
+        notifyDataSetChanged();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.mobile.readyplayer.ui.explorer;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.mobile.readyplayer.ActivityPlaylistPage;
@@ -29,6 +31,8 @@ public class FragmentExplorer extends BaseFragment {
     private AdapterExplorer adapterExplorer;
     private List<ItemExplorer> listOfFiles;
     private ArrayList<String> listOfFormats;
+    private FloatingActionButton floatingActionButton;
+    private CheckBox checkBoxCheckAll;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -45,6 +49,20 @@ public class FragmentExplorer extends BaseFragment {
     protected void initView(View view, Bundle savedInstanceState) {
         setToolbar(view);
         setHasOptionsMenu(true);
+
+        floatingActionButton = view.findViewById(R.id.floating_action_button);
+        floatingActionButton.hide();
+
+        checkBoxCheckAll = view.findViewById(R.id.chb_checkAll);
+        checkBoxCheckAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapterExplorer.checkAllCheckBoxes(checkBoxCheckAll.isChecked());
+            }
+        });
+
+        listOfFiles = new ArrayList<>();
+
         initializeFormats();
         recycleExplorerFiles(view);
     }
@@ -80,7 +98,7 @@ public class FragmentExplorer extends BaseFragment {
         recyclerViewFiles.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewFiles.setHasFixedSize(true);
 
-        listOfFiles = new ArrayList<>();
+//        listOfFiles = new ArrayList<>();
 
         makeList();
 
@@ -104,7 +122,7 @@ public class FragmentExplorer extends BaseFragment {
                 } else fileType = getType(file.getPath());
 
                 if (file.isDirectory() || listOfFormats.contains(fileType))
-                listOfFiles.add(new ItemExplorer(fileType, file.getName(), file.getAbsolutePath()));
+                    listOfFiles.add(new ItemExplorer(fileType, file.getName(), file.getAbsolutePath()));
             }
         }
     }

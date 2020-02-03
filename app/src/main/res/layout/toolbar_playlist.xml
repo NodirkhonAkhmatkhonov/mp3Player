@@ -10,6 +10,6 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
         android:elevation="0dp"
-        app:title=""
+        app:titleTextAppearance="@style/Toolbar.TitleText"
         />
 </FrameLayout>
