@@ -93,7 +93,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
             }
         }
 
-        Toast.makeText(context, "" + listOfCheckedFiles.size(), Toast.LENGTH_SHORT).show();
         notifyDataSetChanged();
     }
 
