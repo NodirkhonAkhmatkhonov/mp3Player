@@ -3,6 +3,8 @@
     package="com.mobile.readyplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <application
         android:name=".ui.notification.App"
@@ -16,13 +18,15 @@
         <activity android:name=".ActivityPlaylistPage"/>
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".ServiceMusic"/>
+        <service android:name=".ServiceMusic"
+            android:exported="false"/>
         <receiver android:name=".ui.notification.NotificationReceiver"/>
     </application>
 

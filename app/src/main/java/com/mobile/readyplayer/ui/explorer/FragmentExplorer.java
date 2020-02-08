@@ -58,6 +58,7 @@ public class FragmentExplorer extends BaseFragment {
             @Override
             public void onClick(View v) {
                 adapterExplorer.checkAllCheckBoxes(checkBoxCheckAll.isChecked());
+                Toast.makeText(getContext(), "" + adapterExplorer.listOfCheckedFiles.size(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -98,15 +99,13 @@ public class FragmentExplorer extends BaseFragment {
         recyclerViewFiles.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewFiles.setHasFixedSize(true);
 
-//        listOfFiles = new ArrayList<>();
-
         makeList();
 
         adapterExplorer = new AdapterExplorer(listOfFiles, getContext());
         recyclerViewFiles.setAdapter(adapterExplorer);
 
-        ///////////////////////////
-        adapterExplorer.notifyDataSetChanged();
+        /////////////////////////
+//        adapterExplorer.notifyDataSetChanged();
     }
 
     private void makeList() {
@@ -125,6 +124,11 @@ public class FragmentExplorer extends BaseFragment {
                     listOfFiles.add(new ItemExplorer(fileType, file.getName(), file.getAbsolutePath()));
             }
         }
+
+        if (!listOfFiles.isEmpty()) {
+            checkBoxCheckAll.setClickable(true);
+        } else
+            checkBoxCheckAll.setClickable(false);
     }
 
     private String getType(String path) {
@@ -142,6 +146,8 @@ public class FragmentExplorer extends BaseFragment {
         setTitle();
 
         listOfFiles.clear();
+        checkBoxCheckAll.setChecked(false);
+
         makeList();
         adapterExplorer.notifyDataSetChanged();
     }

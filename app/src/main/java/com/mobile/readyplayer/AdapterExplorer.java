@@ -26,7 +26,7 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     private AdapterExplorerCallBack adapterExplorerCallBack;
     private Context context;
     private List<ItemExplorer> listOfFiles;
-    private List<ItemExplorer> listOfCheckedFiles;
+    public List<ItemExplorer> listOfCheckedFiles;
     private MyViewHolder myViewHolder;
 
     @NonNull
@@ -72,7 +72,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 adapterExplorerCallBack.onMethodCallBack(itemExplorer.getNameOfFile());
             }
         });
-
     }
 
     public void checkAllCheckBoxes(boolean isCheck) {
@@ -82,7 +81,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 itemExplorer.setChecked(true);
                 myViewHolder.checkBox.setChecked(true);
                 listOfCheckedFiles.add(itemExplorer);
-                Log.d("test", "" + itemExplorer);
             }
         } else {
             for (ItemExplorer itemExplorer : listOfFiles) {
@@ -92,7 +90,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 listOfCheckedFiles.remove(itemExplorer);
             }
         }
-
         notifyDataSetChanged();
     }
 
@@ -112,6 +109,5 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
             nameOfFile = itemView.findViewById(R.id.nameOfFile);
             imageOfFile = itemView.findViewById(R.id.imageOfFile);
         }
-
     }
 }

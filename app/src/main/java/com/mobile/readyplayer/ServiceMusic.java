@@ -19,6 +19,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 
@@ -65,7 +67,7 @@ public class ServiceMusic extends Service{
         managerCompat = NotificationManagerCompat.from(this);
         mediaSessionCompat = new MediaSessionCompat(this, "tag");
         registerNotificationReceiver();
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     public void closeNotification() {
@@ -119,7 +121,7 @@ public class ServiceMusic extends Service{
                 .setAutoCancel(false)
                 .build();
 
-        managerCompat.notify(1,notification);
+        startForeground(1, notification);
     }
         private void registerNotificationReceiver() {
             receiverNotification = new NotificationReceiver() {
@@ -221,6 +223,7 @@ public class ServiceMusic extends Service{
         try {
             mediaPlayer = new MediaPlayer();
             if (!isFirstTime) {
+                Log.d("test", "is first time");
                 currentSong = listOfSongs.get(0);
                 isFirstTime = true;
             }

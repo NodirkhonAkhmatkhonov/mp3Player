@@ -22,4 +22,6 @@ public class Constants {
 
     public static final String ROOT_PATH = "/storage/emulated/0";
     public static String MUTABLE_PATH = ROOT_PATH;
+
+    public static int NUMBER_OF_TASKS = 0;
 }

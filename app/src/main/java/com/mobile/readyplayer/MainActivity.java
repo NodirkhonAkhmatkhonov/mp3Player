@@ -3,6 +3,7 @@ package com.mobile.readyplayer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.arch.core.executor.DefaultTaskExecutor;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +27,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -253,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
                     adapterSongs.changeCurrentSongPos(musicService.currentSongPos);
                     currentSongPosition = musicService.currentSongPos;
-                    int lastPos = musicService.mediaPlayer.getCurrentPosition();
+                    int lastPos = !musicService.isFirstTime ? 0 : musicService.mediaPlayer.getCurrentPosition();
                     ivSeekbar.setProgress(lastPos);
                     tvCurrentPoint.setText(formatTime(lastPos/1000));
                 }
@@ -536,6 +539,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         listOfPlaylists.add(new ItemPlaylist(input));
         adapterPlaylist.listOfPlaylists = listOfPlaylists;
         adapterPlaylist.notifyDataHasChanged();
+
         Toast.makeText(musicService, "Playlist " + input + " is created successfully!", Toast.LENGTH_SHORT).show();
     }
 
