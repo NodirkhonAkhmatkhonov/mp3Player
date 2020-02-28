@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -551,6 +552,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     public void openActivityPlaylistPage() {
         Intent intent = new Intent(this, ActivityPlaylistPage.class);
+        intent.putExtra("listOfSongs", (Serializable) listOfSongs);
         startActivity(intent);
     }
 

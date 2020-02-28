@@ -16,7 +16,9 @@ import android.widget.Toast;
 import com.mobile.readyplayer.ActivityPlaylistPage;
 import com.mobile.readyplayer.AdapterExplorer;
 import com.mobile.readyplayer.Constants;
+import com.mobile.readyplayer.MainActivity;
 import com.mobile.readyplayer.R;
+import com.mobile.readyplayer.ServiceMusic;
 import com.mobile.readyplayer.base.BaseFragment;
 import com.mobile.readyplayer.ui.ItemExplorer;
 
@@ -33,6 +35,7 @@ public class FragmentExplorer extends BaseFragment {
     private ArrayList<String> listOfFormats;
     private FloatingActionButton floatingActionButton;
     private CheckBox checkBoxCheckAll;
+    private ServiceMusic serviceMusic;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -74,6 +77,15 @@ public class FragmentExplorer extends BaseFragment {
         ));
     }
 
+    public void showFloatingActionButton(boolean listEmpty) {
+        if (!listEmpty)
+            floatingActionButton.show();
+        else
+            floatingActionButton.hide();
+
+//        Toast.makeText(getContext(), "size = " + listOfFiles.size(), Toast.LENGTH_SHORT).show();
+    }
+
     private void setToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.toolbarPlaylist);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
@@ -103,9 +115,6 @@ public class FragmentExplorer extends BaseFragment {
 
         adapterExplorer = new AdapterExplorer(listOfFiles, getContext());
         recyclerViewFiles.setAdapter(adapterExplorer);
-
-        /////////////////////////
-//        adapterExplorer.notifyDataSetChanged();
     }
 
     private void makeList() {

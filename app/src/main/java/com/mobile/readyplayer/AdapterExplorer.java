@@ -57,6 +57,8 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 } else {
                     listOfCheckedFiles.remove(itemExplorer);
                 }
+
+                adapterExplorerCallBack.showFloatingActionButton(listOfCheckedFiles.isEmpty());
             }
         });
 

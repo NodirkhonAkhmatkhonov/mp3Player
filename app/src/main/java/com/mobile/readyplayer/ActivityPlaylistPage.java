@@ -9,11 +9,13 @@ import android.util.Log;
 import com.mobile.readyplayer.ui.explorer.FragmentExplorer;
 import com.mobile.readyplayer.ui.playlist.FragmentPlaylist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityPlaylistPage extends AppCompatActivity implements AdapterExplorerCallBack{
 
     private FragmentExplorer fragmentExplorer;
+    public ArrayList<ItemSongs> listOfSongs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,6 +23,7 @@ public class ActivityPlaylistPage extends AppCompatActivity implements AdapterEx
         setContentView(R.layout.activity_playlist);
 
         fragmentExplorer = new FragmentExplorer();
+        listOfSongs = (ArrayList<ItemSongs>) getIntent().getSerializableExtra("listOfSongs");
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -46,5 +49,10 @@ public class ActivityPlaylistPage extends AppCompatActivity implements AdapterEx
     @Override
     public void onMethodCallBack(String nameOfFile) {
         fragmentExplorer.insideDirectory(nameOfFile);
+    }
+
+    @Override
+    public void showFloatingActionButton(boolean appear) {
+        fragmentExplorer.showFloatingActionButton(appear);
     }
 }
