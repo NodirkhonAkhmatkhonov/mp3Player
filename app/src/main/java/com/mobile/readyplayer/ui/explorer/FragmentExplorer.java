@@ -82,8 +82,6 @@ public class FragmentExplorer extends BaseFragment {
             floatingActionButton.show();
         else
             floatingActionButton.hide();
-
-//        Toast.makeText(getContext(), "size = " + listOfFiles.size(), Toast.LENGTH_SHORT).show();
     }
 
     private void setToolbar(View view) {
