@@ -1,12 +1,8 @@
-package com.mobile.readyplayer;
+package com.mobile.readyplayer.ui.explorer;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +10,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.mobile.readyplayer.AdapterExplorerCallBack;
+import com.mobile.readyplayer.R;
 import com.mobile.readyplayer.ui.ItemExplorer;
 
 import java.util.ArrayList;
@@ -72,6 +69,8 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
             @Override
             public void onClick(View v) {
                 adapterExplorerCallBack.onMethodCallBack(itemExplorer.getNameOfFile());
+                adapterExplorerCallBack.showFloatingActionButton(true);
+                adapterExplorerCallBack.uncheckCheckAllButton();
             }
         });
     }

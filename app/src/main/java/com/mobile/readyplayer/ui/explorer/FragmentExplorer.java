@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,10 +14,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import com.mobile.readyplayer.ActivityPlaylistPage;
-import com.mobile.readyplayer.AdapterExplorer;
+import com.mobile.readyplayer.ItemSongs;
+import com.mobile.readyplayer.ui.playlist.ActivityPlaylistPage;
 import com.mobile.readyplayer.Constants;
-import com.mobile.readyplayer.MainActivity;
 import com.mobile.readyplayer.R;
 import com.mobile.readyplayer.ServiceMusic;
 import com.mobile.readyplayer.base.BaseFragment;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FragmentExplorer extends BaseFragment {
+public class FragmentExplorer extends BaseFragment implements View.OnClickListener {
 
     private RecyclerView recyclerViewFiles;
     private AdapterExplorer adapterExplorer;
@@ -54,6 +54,7 @@ public class FragmentExplorer extends BaseFragment {
         setHasOptionsMenu(true);
 
         floatingActionButton = view.findViewById(R.id.floating_action_button);
+        floatingActionButton.setOnClickListener(this);
         floatingActionButton.hide();
 
         checkBoxCheckAll = view.findViewById(R.id.chb_checkAll);
@@ -173,5 +174,40 @@ public class FragmentExplorer extends BaseFragment {
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_explorer;
+    }
+
+    public void uncheckCheckAllButtons() {
+        checkBoxCheckAll.setChecked(false);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.floating_action_button: {
+                addSelectedSongs();
+                ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
+                break;
+            }
+        }
+    }
+
+    private void addSelectedSongs() {
+        for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles){
+             for (ItemSongs itemSongs : ((ActivityPlaylistPage) getActivity()).listOfSongs) {
+                    if (!itemExplorer.getFileType().equals("dir") && itemSongs.getAbsolutePath().equals(itemExplorer.getAbsolutePath())) {
+                        ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
+                    } else if (itemSongs.getAbsolutePath().startsWith(itemExplorer.getAbsolutePath())) {
+                        ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
+                    }
+                }
+            }
+
+        Toast.makeText(getContext(),"" + ((ActivityPlaylistPage)getActivity()).listOfSelectedSongs.size(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("test", "onDESTROY");
     }
 }

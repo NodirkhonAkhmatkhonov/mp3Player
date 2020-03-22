@@ -3,7 +3,6 @@ package com.mobile.readyplayer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.arch.core.executor.DefaultTaskExecutor;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -27,7 +25,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +37,7 @@ import android.widget.Toast;
 
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
+import com.mobile.readyplayer.ui.playlist.ActivityPlaylistPage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -183,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         tvDuration = findViewById(R.id.duration);
         tvCurrentPoint = findViewById(R.id.currentPoint);
 
-        recyclerViewSongs = findViewById(R.id.recyclerView);
-        recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
+            recyclerViewSongs = findViewById(R.id.recyclerView);
+            recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
 
         floatingActionButton = findViewById(R.id.floating_action_bar);
         floatingActionButton.setOnClickListener(this);
