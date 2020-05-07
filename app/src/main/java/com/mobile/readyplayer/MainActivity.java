@@ -181,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         tvDuration = findViewById(R.id.duration);
         tvCurrentPoint = findViewById(R.id.currentPoint);
 
-            recyclerViewSongs = findViewById(R.id.recyclerView);
-            recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
+        recyclerViewSongs = findViewById(R.id.recyclerView);
+        recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
 
         floatingActionButton = findViewById(R.id.floating_action_bar);
         floatingActionButton.setOnClickListener(this);
@@ -348,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 }
             }
         };
+
         IntentFilter filter = new IntentFilter(Constants.MAIN_ACTION);
         registerReceiver(receiverMain, filter);
     }
@@ -466,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         /// Here there is a trick. In order to avoid exception, we declared isFirstTime inside musicService. If we press play
         /// button straightforward when we ran app for the first time, service has to play first music in the list as the default one
         /// But inside service it is controlled using isFirstTime. If it is false, then it means app must play the first song as default
-        /// If the user chooses any song from the list as the app is opened for the first time, it should play that song. So if we
+        /// If the user chooses any song from the list when the app is opened for the first time, it should play that song. So if we
         /// change the value of isFirstTime into true, then everything works as usual.
         if (!musicService.isFirstTime) {
             musicService.isFirstTime = true;

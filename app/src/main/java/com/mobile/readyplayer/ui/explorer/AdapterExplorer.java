@@ -23,7 +23,7 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     private AdapterExplorerCallBack adapterExplorerCallBack;
     private Context context;
     private List<ItemExplorer> listOfFiles;
-    public List<ItemExplorer> listOfCheckedFiles;
+    public List<ItemExplorer> listOfCheckedFiles = new ArrayList<>();
     private MyViewHolder myViewHolder;
 
     @NonNull
@@ -31,7 +31,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_explorer, viewGroup, false);
         myViewHolder = new MyViewHolder(view);
-        listOfCheckedFiles = new ArrayList<>();
         return myViewHolder;
     }
 

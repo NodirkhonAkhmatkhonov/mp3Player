@@ -35,7 +35,6 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
     private ArrayList<String> listOfFormats;
     private FloatingActionButton floatingActionButton;
     private CheckBox checkBoxCheckAll;
-    private ServiceMusic serviceMusic;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -62,7 +61,7 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 adapterExplorer.checkAllCheckBoxes(checkBoxCheckAll.isChecked());
-                Toast.makeText(getContext(), "" + adapterExplorer.listOfCheckedFiles.size(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "" + checkBoxCheckAll.isChecked(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -191,6 +190,7 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
         }
     }
 
+    // Here this method adds all selected songs and the songs which were inside folders selected to be inside the playlist
     private void addSelectedSongs() {
         for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles){
              for (ItemSongs itemSongs : ((ActivityPlaylistPage) getActivity()).listOfSongs) {
@@ -202,12 +202,9 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
                 }
             }
 
-        Toast.makeText(getContext(),"" + ((ActivityPlaylistPage)getActivity()).listOfSelectedSongs.size(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("test", "onDESTROY");
+        // Due to we use the object of Fragment Explorer class, it will restore the UI's state, like checkboxes.
+        // If we don't set this checkbox as checked, then the checkbox appears as checked if it was checked before
+        // floatActionButton was clicked
+        checkBoxCheckAll.setChecked(false);
     }
 }
