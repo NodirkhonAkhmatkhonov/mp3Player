@@ -42,12 +42,6 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void initView(View view, Bundle savedInstanceState) {
         setToolbar(view);
         setHasOptionsMenu(true);
@@ -140,6 +134,12 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
 
     private String getType(String path) {
         return path.substring(path.lastIndexOf(".") + 1);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
+        return super.onOptionsItemSelected(item);
     }
 
     public void outsideDirectory() {

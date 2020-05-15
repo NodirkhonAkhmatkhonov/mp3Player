@@ -4,7 +4,7 @@ public class Constants {
 
     // actions
     public static final String MAIN_ACTION = "MAIN_ACTION";
-    public static final String NOTIFICATION_ACTION = "NOTIFICATION_ACTION";
+//    public static final String NOTIFICATION_ACTION = "NOTIFICATION_ACTION";
 
     // for Main UI
     public static final int SERVICE_SEEK_TO = 1;
@@ -23,5 +23,5 @@ public class Constants {
     public static final String ROOT_PATH = "/storage/emulated/0";
     public static String MUTABLE_PATH = ROOT_PATH;
 
-    public static int NUMBER_OF_TASKS = 0;
+//    public static int NUMBER_OF_TASKS = 0;
 }
