@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +30,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -50,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     private ServiceMusic musicService = null;
 
-    private RecyclerView recyclerViewSongs;
     private RecyclerView recyclerViewPlaylists;
+    private RecyclerView recyclerViewBottomSheet;
 
     private AdapterSongs adapterSongs;
     private AdapterPlaylist adapterPlaylist;
@@ -67,11 +70,13 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private ImageView ivPreviousButton;
     private ImageView ivRepeatButton;
     private ImageView ivMuteButton;
+    private ImageView icDirection;
 
     private TextView tvTitle;
     private TextView tvArtist;
     private TextView tvDuration;
     private TextView tvCurrentPoint;
+    private TextView tvPlaylistName;
 
     private SeekBar ivSeekbar;
 
@@ -80,16 +85,20 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private boolean isPlaying;
     private boolean isRepeated;
     private boolean isMute;
+    private boolean isExpand;
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
     private FloatingActionButton floatingActionButton;
+    private FloatingActionButton fabAdd;
 
     private View header;
     private Button btnAdd;
 
     private NotificationReceiver notificationReceiver = null;
+
+    private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
     protected void onStart() {
@@ -101,7 +110,12 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        else
+        else if (isExpand) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            isExpand = !isExpand;
+            return;
+        } else
             super.onBackPressed();
     }
 
@@ -154,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // change status bar color
+        changeStatusBarColor();
+
         navigationView = findViewById(R.id.nav_view);
 
         ivPlayButton = findViewById(R.id.playButton);
@@ -161,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         ivNextButton = findViewById(R.id.nextButton);
         ivMuteButton = findViewById(R.id.muteButton);
         ivRepeatButton = findViewById(R.id.repeatButton);
+        icDirection = findViewById(R.id.icDirection);
 
         header = navigationView.getHeaderView(0);
 
@@ -181,11 +199,15 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         tvDuration = findViewById(R.id.duration);
         tvCurrentPoint = findViewById(R.id.currentPoint);
 
-        recyclerViewSongs = findViewById(R.id.recyclerView);
         recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
 
+        recyclerViewBottomSheet = findViewById(R.id.recyclerViewBottomSheet);
+
         floatingActionButton = findViewById(R.id.floating_action_bar);
+        fabAdd = findViewById(R.id.fabAdd);
+
         floatingActionButton.setOnClickListener(this);
+        fabAdd.setOnClickListener(this);
 
         notificationReceiver = new NotificationReceiver();
 
@@ -229,6 +251,55 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         });
 
         recyclePlaylists();
+
+        initBottomSheet();
+    }
+
+    private void recycleBottomSheet() {
+        recyclerViewBottomSheet.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        recyclerViewBottomSheet.setHasFixedSize(true);
+
+        listOfSongs = musicService.listOfSongs;
+        adapterSongs = new AdapterSongs(listOfSongs, this);
+        recyclerViewBottomSheet.setAdapter(adapterSongs);
+    }
+
+    private void initBottomSheet() {
+        View view = findViewById(R.id.bottom_sheet_scroll);
+        bottomSheetBehavior = BottomSheetBehavior.from(view);
+
+        tvPlaylistName = findViewById(R.id.name_playlist);
+
+        tvPlaylistName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isExpand) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    icDirection.setImageResource(R.drawable.ic_arrow_downward_white_24dp);
+                    fabAdd.show();
+                }
+                else {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    icDirection.setImageResource(R.drawable.ic_arrow_upward_white_24dp);
+                    fabAdd.hide();
+                }
+
+                isExpand = !isExpand;
+            }
+        });
+    }
+
+    private void changeStatusBarColor() {
+        Window window = getWindow();
+
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        // finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorStatusBar));
     }
 
     private void initReceiver() {
@@ -241,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 // Music Service's findList() is called to find the list of all audios in Internal Memory
                 musicService.findList();
 
-                recycleSongs();
+                recycleBottomSheet();
 
                 if (musicService.currentSong != null) {
 
@@ -266,15 +337,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 musicService = null;
             }
         }, Context.BIND_AUTO_CREATE);
-    }
-
-    private void recycleSongs() {
-        recyclerViewSongs.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        recyclerViewSongs.setHasFixedSize(true);
-
-        listOfSongs = musicService.listOfSongs;
-        adapterSongs = new AdapterSongs(listOfSongs, this);
-        recyclerViewSongs.setAdapter(adapterSongs);
     }
 
     private void recyclePlaylists() {
@@ -506,6 +568,10 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 break;
             }
 
+            case R.id.btnAdd: {
+                openPlaylistDialog();
+            }
+
             case R.id.floating_action_bar: {
                 Collections.shuffle(musicService.listOfSongs);
 
@@ -518,10 +584,14 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 break;
             }
 
-            case R.id.btnAdd: {
-                openPlaylistDialog();
+            case R.id.fabAdd: {
+                openExplorer();
             }
         }
+    }
+
+    private void openExplorer() {
+        
     }
 
     public void openPlaylistDialog() {
@@ -559,4 +629,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     public void removePlayListItem() {
         adapterPlaylist.removePlayListItem();
     }
+
+
 }

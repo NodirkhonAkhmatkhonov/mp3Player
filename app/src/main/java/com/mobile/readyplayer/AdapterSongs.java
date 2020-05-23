@@ -62,7 +62,7 @@ public class AdapterSongs extends RecyclerView.Adapter<AdapterSongs.MyViewHolder
             myViewHolder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorSelectedSong));
             myViewHolder.imPlayingState.setImageResource(R.drawable.ic_equalizer_white_24dp);
         } else {
-            myViewHolder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorTransparent));
+            myViewHolder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorSongBack));
             myViewHolder.imPlayingState.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         }
     }

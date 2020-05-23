@@ -3,6 +3,7 @@ package com.mobile.readyplayer.ui.explorer;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,28 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
         this.context = context;
     }
 
+    public void checkAllCheckBoxes(boolean isCheck) {
+
+        if (isCheck) {
+            for (ItemExplorer itemExplorer : listOfFiles) {
+                itemExplorer.setChecked(true);
+                myViewHolder.checkBox.setChecked(true);
+                listOfCheckedFiles.add(itemExplorer);
+            }
+        } else {
+            for (ItemExplorer itemExplorer : listOfFiles) {
+                itemExplorer.setChecked(false);
+                listOfCheckedFiles.clear();
+                myViewHolder.checkBox.setChecked(false);
+                listOfCheckedFiles.remove(itemExplorer);
+            }
+        }
+
+        Log.d("test", "list size in adapter = " + listOfCheckedFiles.size());
+
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
         final ItemExplorer itemExplorer = listOfFiles.get(i);
@@ -72,25 +95,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 adapterExplorerCallBack.uncheckCheckAllButton();
             }
         });
-    }
-
-    public void checkAllCheckBoxes(boolean isCheck) {
-
-        if (isCheck) {
-            for (ItemExplorer itemExplorer : listOfFiles) {
-                itemExplorer.setChecked(true);
-                myViewHolder.checkBox.setChecked(true);
-                listOfCheckedFiles.add(itemExplorer);
-            }
-        } else {
-            for (ItemExplorer itemExplorer : listOfFiles) {
-                itemExplorer.setChecked(false);
-                listOfCheckedFiles.clear();
-                myViewHolder.checkBox.setChecked(false);
-                listOfCheckedFiles.remove(itemExplorer);
-            }
-        }
-        notifyDataSetChanged();
     }
 
     @Override

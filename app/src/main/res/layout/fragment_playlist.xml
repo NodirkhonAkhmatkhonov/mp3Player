@@ -23,7 +23,7 @@
         android:background="@color/colorSelectedSong"
         android:text="Add Music"
         android:padding="20dp"
-        android:src="@drawable/ic_add_black_24dp"
+        android:src="@drawable/ic_add_white_24dp"
         android:layout_margin="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

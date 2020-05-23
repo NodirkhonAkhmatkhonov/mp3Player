@@ -194,14 +194,26 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
     private void addSelectedSongs() {
         for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles){
              for (ItemSongs itemSongs : ((ActivityPlaylistPage) getActivity()).listOfSongs) {
+                 boolean a = false;
                     if (!itemExplorer.getFileType().equals("dir") && itemSongs.getAbsolutePath().equals(itemExplorer.getAbsolutePath())) {
                         ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
-                    } else if (itemSongs.getAbsolutePath().startsWith(itemExplorer.getAbsolutePath())) {
+                        a = true;
+                    } else if (itemExplorer.getFileType().equals("dir") && itemSongs.getAbsolutePath().startsWith(itemExplorer.getAbsolutePath())) {
                         ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
+                        a = true;
                     }
+
+                 Log.d("test", "1) " + itemExplorer.getAbsolutePath() +
+                         "\n                                              " + a + "2) " + itemSongs.getAbsolutePath());
                 }
+
             }
 
+        Log.d("test", "size = " + adapterExplorer.listOfCheckedFiles.size());
+
+        for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles) {
+            Log.d("test", "\n" + itemExplorer.getAbsolutePath());
+        }
         // Due to we use the object of Fragment Explorer class, it will restore the UI's state, like checkboxes.
         // If we don't set this checkbox as checked, then the checkbox appears as checked if it was checked before
         // floatActionButton was clicked

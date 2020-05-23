@@ -3,10 +3,24 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorSongBack">#A6232227</color>
+    <color name="colorSongBack">#C4232227</color>
     <color name="colorLine">#4E4D52</color>
     <color name="colorAudioIconBack">#4B4B5C</color>
     <color name="colorSelectedSong">#000000</color>
     <color name="colorCheckFloatingActionButton">#01B308</color>
     <color name="colorTransparent">#00000000</color>
+    <color name="colorStatusBar">#00000000</color>
+
+    <color name="colorButtonBack">#74000000</color>
+    <color name="colorStartMainDown">#3F3F3F</color>
+    <color name="colorEndMainDown">#535353</color>
+    <color name="colorPurpleLeft">#A339F1</color>
+    <color name="colorPurpleRight">#7A36FB</color>
+    <color name="colorMainBack">#57A200</color>
+    <color name="colorStartMainUp">#000000</color>
+    <color name="colorEndMainUp">#3F3F3F</color>
+    <color name="colorPlaylistName">#FFFFFF</color>
+
+    <color name="colorShadowBackgroundMain">#8A000000</color>
+    <color name="colorAddFloatingActionButton">#C8008421</color>
 </resources>
