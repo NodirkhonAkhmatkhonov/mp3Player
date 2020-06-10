@@ -13,19 +13,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mobile.readyplayer.AdapterExplorerCallBack;
+import com.mobile.readyplayer.ItemSongs;
 import com.mobile.readyplayer.R;
 import com.mobile.readyplayer.ui.ItemExplorer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyViewHolder> {
 
     private AdapterExplorerCallBack adapterExplorerCallBack;
     private Context context;
     private List<ItemExplorer> listOfFiles;
-    public List<ItemExplorer> listOfCheckedFiles = new ArrayList<>();
+    public Set<ItemExplorer> listOfCheckedFiles = new HashSet<>();
     private MyViewHolder myViewHolder;
+    private boolean isAllCheck;
+
 
     @NonNull
     @Override
@@ -43,22 +48,30 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
 
     public void checkAllCheckBoxes(boolean isCheck) {
 
+        listOfCheckedFiles.clear();
+        Log.d("test", "list of checked files size after clearing = " + listOfCheckedFiles.size());
+
         if (isCheck) {
             for (ItemExplorer itemExplorer : listOfFiles) {
                 itemExplorer.setChecked(true);
                 myViewHolder.checkBox.setChecked(true);
                 listOfCheckedFiles.add(itemExplorer);
             }
+
+            Log.d("test", "all button true");
         } else {
             for (ItemExplorer itemExplorer : listOfFiles) {
                 itemExplorer.setChecked(false);
-                listOfCheckedFiles.clear();
                 myViewHolder.checkBox.setChecked(false);
-                listOfCheckedFiles.remove(itemExplorer);
+//                listOfCheckedFiles.remove(itemExplorer);
             }
+            Log.d("test", "all button false");
         }
 
-        Log.d("test", "list size in adapter = " + listOfCheckedFiles.size());
+        for (ItemExplorer itemExplorer: listOfCheckedFiles)
+            Log.d("test", itemExplorer.getAbsolutePath());
+
+        isAllCheck = isCheck;
 
         notifyDataSetChanged();
     }
@@ -66,15 +79,18 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
         final ItemExplorer itemExplorer = listOfFiles.get(i);
+        final int position = i;
 
         myViewHolder.checkBox.setChecked(itemExplorer.isChecked());
         myViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    listOfCheckedFiles.add(itemExplorer);
-                } else {
-                    listOfCheckedFiles.remove(itemExplorer);
+                if (!isAllCheck) {
+                    if (isChecked) {
+                        listOfCheckedFiles.add(itemExplorer);
+                    } else {
+                        listOfCheckedFiles.remove(itemExplorer);
+                    }
                 }
 
                 adapterExplorerCallBack.showFloatingActionButton(listOfCheckedFiles.isEmpty());
@@ -90,6 +106,7 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
         myViewHolder.nameOfFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 adapterExplorerCallBack.onMethodCallBack(itemExplorer.getNameOfFile());
                 adapterExplorerCallBack.showFloatingActionButton(true);
                 adapterExplorerCallBack.uncheckCheckAllButton();

@@ -336,15 +336,20 @@ public class ServiceMusic extends Service{
             int titleColumnId = audioCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int pathColumnId = audioCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             int durationColumnId = audioCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+//            int albumArt = audioCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
 
             do {
                 String artist = audioCursor.getString(artistColumnId);
                 String title = audioCursor.getString(titleColumnId);
                 String path = audioCursor.getString(pathColumnId);
                 long duration = audioCursor.getLong(durationColumnId);
+//                String pathSong = audioCursor.getString(albumArt);
+//                Log.d("test", "Album_ID = " + pathSong);
 
                 listOfSongs.add(new ItemSongs(title, path, artist, duration));
             } while (audioCursor.moveToNext());
+
+
         }
 
         informListReady();

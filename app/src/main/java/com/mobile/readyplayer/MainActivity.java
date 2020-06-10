@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -87,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private boolean isMute;
     private boolean isExpand;
 
+    private int SERVICE_RESULT = 1;
+    private int LAUNCH_PLAYLIST_ACTIVITY = 2;
+
     private DrawerLayout drawer;
     private NavigationView navigationView;
 
@@ -112,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             drawer.closeDrawer(GravityCompat.START);
         else if (isExpand) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
             isExpand = !isExpand;
             return;
         } else
@@ -128,10 +131,17 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == 1) {
+        if (requestCode == SERVICE_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
                 musicService.isFirstTime = true;
                 musicService.identifyThroughTheList(data.getStringExtra("song_item"));
+            }
+        } else if (requestCode == LAUNCH_PLAYLIST_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK) {
+                ArrayList<ItemSongs> testList = (ArrayList<ItemSongs>) data.getSerializableExtra("List");
+                listOfSongs.addAll(testList);
+
+                adapterSongs.notifyDataSetChanged();
             }
         }
     }
@@ -473,56 +483,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         musicService.isMute = isMute;
     }
 
-    private String formatTime(int position) {
-        return String.format("%s:%s", fillNumber(position / 60), fillNumber(position % 60));
-    }
-
-    private String fillNumber(int number) {
-        return number < 10 ? String.format("0%d", number) : String.valueOf(number);
-    }
-
-    private void checkExternalMemoryPermission() {
-        if (!checkIfAlreadyHavePermission()) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    1);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initReceiver();
-                } else {
-                    finish();
-                }
-                break;
-            }
-        }
-    }
-
-    private boolean checkIfAlreadyHavePermission() {
-        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void startService() {
-        Intent intent = new Intent(this, ServiceMusic.class);
-        startService(intent);
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void onMethodCallBack(int position) {
 
@@ -585,13 +545,12 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
 
             case R.id.fabAdd: {
-                openExplorer();
+                openActivityPlaylistPage();
             }
         }
     }
 
     private void openExplorer() {
-        
     }
 
     public void openPlaylistDialog() {
@@ -622,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     public void openActivityPlaylistPage() {
         Intent intent = new Intent(this, ActivityPlaylistPage.class);
         intent.putExtra("listOfSongs", (Serializable) listOfSongs);
-        startActivity(intent);
+        startActivityForResult(intent, LAUNCH_PLAYLIST_ACTIVITY);
     }
 
     @Override
@@ -631,4 +590,58 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     }
 
 
+
+
+
+
+
+    private String formatTime(int position) {
+        return String.format("%s:%s", fillNumber(position / 60), fillNumber(position % 60));
+    }
+
+    private String fillNumber(int number) {
+        return number < 10 ? String.format("0%d", number) : String.valueOf(number);
+    }
+
+    private void checkExternalMemoryPermission() {
+        if (!checkIfAlreadyHavePermission()) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initReceiver();
+                } else {
+                    finish();
+                }
+                break;
+            }
+        }
+    }
+
+    private boolean checkIfAlreadyHavePermission() {
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startService() {
+        Intent intent = new Intent(this, ServiceMusic.class);
+        startService(intent);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

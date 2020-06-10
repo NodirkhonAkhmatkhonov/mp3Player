@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -36,9 +37,13 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
     private FloatingActionButton floatingActionButton;
     private CheckBox checkBoxCheckAll;
 
+    private Button button;
+    private File[] files;
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_options_explorer, menu);
+
     }
 
     @Override
@@ -46,26 +51,36 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
         setToolbar(view);
         setHasOptionsMenu(true);
 
+        listOfFiles = new ArrayList<>();
+
         floatingActionButton = view.findViewById(R.id.floating_action_button);
         floatingActionButton.setOnClickListener(this);
         floatingActionButton.hide();
+
+        button = view.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"" + adapterExplorer.listOfCheckedFiles.size(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         checkBoxCheckAll = view.findViewById(R.id.chb_checkAll);
         checkBoxCheckAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // it calls a method from adapter to check all checkboxes
                 adapterExplorer.checkAllCheckBoxes(checkBoxCheckAll.isChecked());
-                Toast.makeText(getContext(), "" + checkBoxCheckAll.isChecked(), Toast.LENGTH_SHORT).show();
+                ((ActivityPlaylistPage)getActivity()).isCheckAllBoxOn = checkBoxCheckAll.isChecked();
             }
         });
-
-        listOfFiles = new ArrayList<>();
 
         initializeFormats();
         recycleExplorerFiles(view);
     }
 
     private void initializeFormats() {
+        // this is the list of media files which android can play
         listOfFormats = new ArrayList<>(Arrays.asList(
                 "mp3", "wma", "wav", "mp2", "aac", "ac3", "au", "ogg", "flac"
         ));
@@ -111,7 +126,7 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
 
     private void makeList() {
         final File dir = new File(Constants.MUTABLE_PATH);
-        final File[] files = dir.listFiles();
+        files = dir.listFiles();
 
         for (File file: files) {
             if (!file.isHidden()) {
@@ -184,7 +199,9 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.floating_action_button: {
                 addSelectedSongs();
-                ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
+                Log.d("test", "size of checked files before button pressed = " + ((ActivityPlaylistPage)getActivity()).listOfSelectedSongs.size());
+                ((ActivityPlaylistPage)getActivity()).sendListBack();
+//                ((ActivityPlaylistPage)getActivity()).openPlaylistFragment();
                 break;
             }
         }
@@ -192,28 +209,22 @@ public class FragmentExplorer extends BaseFragment implements View.OnClickListen
 
     // Here this method adds all selected songs and the songs which were inside folders selected to be inside the playlist
     private void addSelectedSongs() {
+        Log.d("test", "size of checked files = " + adapterExplorer.listOfCheckedFiles.size());
+
         for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles){
              for (ItemSongs itemSongs : ((ActivityPlaylistPage) getActivity()).listOfSongs) {
-                 boolean a = false;
+
                     if (!itemExplorer.getFileType().equals("dir") && itemSongs.getAbsolutePath().equals(itemExplorer.getAbsolutePath())) {
                         ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
-                        a = true;
                     } else if (itemExplorer.getFileType().equals("dir") && itemSongs.getAbsolutePath().startsWith(itemExplorer.getAbsolutePath())) {
                         ((ActivityPlaylistPage) getActivity()).listOfSelectedSongs.add(itemSongs);
-                        a = true;
                     }
 
-                 Log.d("test", "1) " + itemExplorer.getAbsolutePath() +
-                         "\n                                              " + a + "2) " + itemSongs.getAbsolutePath());
-                }
+             }
 
-            }
-
-        Log.d("test", "size = " + adapterExplorer.listOfCheckedFiles.size());
-
-        for (ItemExplorer itemExplorer: adapterExplorer.listOfCheckedFiles) {
-            Log.d("test", "\n" + itemExplorer.getAbsolutePath());
+             Log.d("test", "from explorer fragment = " + itemExplorer.getAbsolutePath() + "\n");
         }
+
         // Due to we use the object of Fragment Explorer class, it will restore the UI's state, like checkboxes.
         // If we don't set this checkbox as checked, then the checkbox appears as checked if it was checked before
         // floatActionButton was clicked

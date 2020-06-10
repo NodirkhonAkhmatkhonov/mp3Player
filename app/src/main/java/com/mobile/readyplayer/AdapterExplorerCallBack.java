@@ -4,4 +4,5 @@ public interface AdapterExplorerCallBack {
     void onMethodCallBack(String nameOfFile);
     void showFloatingActionButton(boolean appear);
     void uncheckCheckAllButton();
+    boolean getStateCheckAllCheckboxes();
 }
