@@ -39,6 +39,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mobile.readyplayer.ui.ItemExplorer;
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 import com.mobile.readyplayer.ui.playlist.ActivityPlaylistPage;
@@ -139,6 +140,14 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         } else if (requestCode == LAUNCH_PLAYLIST_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
                 ArrayList<ItemSongs> testList = (ArrayList<ItemSongs>) data.getSerializableExtra("List");
+
+                Log.d("test", "Before sent back>>>>>>>>>>>>>>>>>>>>");
+
+                for (ItemSongs itemSongs: testList){
+                    Log.d("test", "final list" + itemSongs.getAbsolutePath());
+                }
+
+
                 listOfSongs.addAll(testList);
 
                 adapterSongs.notifyDataSetChanged();
