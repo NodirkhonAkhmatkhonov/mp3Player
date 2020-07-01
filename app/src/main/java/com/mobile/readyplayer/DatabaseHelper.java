@@ -10,7 +10,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = "DatabaseHelper";
     public static final String TABLE = "songs_table";
     public static final String COL1 = "ID";
-    public static final String COL2 = "path";
+//    public static final String COL2 = "path";
 
     public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
