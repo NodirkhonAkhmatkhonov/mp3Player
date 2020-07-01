@@ -77,7 +77,7 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ActivityPlaylistPage.this, "" + adapterExplorer.listOfSelectedSongs.size(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActivityPlaylistPage.this, "" + adapterExplorer.listOfSelected.size(), Toast.LENGTH_SHORT).show();
             }
         });
         initializeFormats();
@@ -183,7 +183,7 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
     public void sendListBack() {
 
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("List", listOfFinalSelectedSongs);
+        returnIntent.putExtra("List", adapterExplorer.listOfSelected);
         setResult(Activity.RESULT_OK,returnIntent);
 
         finish();
@@ -193,8 +193,6 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.floating_action_button: {
-                makeFinalSongList();
-
                 sendListBack();
                 break;
             }

@@ -39,7 +39,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mobile.readyplayer.ui.ItemExplorer;
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 import com.mobile.readyplayer.ui.playlist.ActivityPlaylistPage;
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private AdapterPlaylist adapterPlaylist;
 
     private List<ItemSongs> listOfSongs;
+    private List<ItemSongs> listOfAllSongs;
     public List<ItemPlaylist> listOfPlaylists;
 
     private ItemSongs currentSongItem;
@@ -106,12 +106,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private BottomSheetBehavior bottomSheetBehavior;
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Constants.ACTIVITY_ALIVE = true;
-    }
-
-    @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
@@ -139,17 +133,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
         } else if (requestCode == LAUNCH_PLAYLIST_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
-                ArrayList<ItemSongs> testList = (ArrayList<ItemSongs>) data.getSerializableExtra("List");
+                ArrayList<String> resultList = data.getStringArrayListExtra("List");
 
-                Log.d("test", "Before sent back>>>>>>>>>>>>>>>>>>>>");
-
-                for (ItemSongs itemSongs: testList){
-                    Log.d("test", "final list" + itemSongs.getAbsolutePath());
-                }
-
-
-                listOfSongs.addAll(testList);
-
+                addListFromExplorer(resultList);
                 adapterSongs.notifyDataSetChanged();
             }
         }
@@ -278,7 +264,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         recyclerViewBottomSheet.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         recyclerViewBottomSheet.setHasFixedSize(true);
 
-        listOfSongs = musicService.listOfSongs;
+//        listOfSongs = musicService.listOfSongs;
+        listOfSongs = new ArrayList<>();
         adapterSongs = new AdapterSongs(listOfSongs, this);
         recyclerViewBottomSheet.setAdapter(adapterSongs);
     }
@@ -306,19 +293,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 isExpand = !isExpand;
             }
         });
-    }
-
-    private void changeStatusBarColor() {
-        Window window = getWindow();
-
-        // clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorStatusBar));
     }
 
     private void initReceiver() {
@@ -397,7 +371,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                     case Constants.SERVICE_CURRENT_SONG_DETAIL: {
                         updateInfoSong(false);
 
-                        adapterSongs.changeCurrentSongPos(listOfSongs.indexOf(currentSongItem));
+//                        adapterSongs.changeCurrentSongPos(listOfSongs.indexOf(currentSongItem));
+                        adapterSongs.changeCurrentSongPos(currentSongPosition);
                         isPlaying = false;
                         setPlayButton(true);
                         break;
@@ -454,11 +429,12 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     }
 
     private void updateInfoSong(boolean isListReady) {
-        if (musicService.listOfSongs.isEmpty()) return;
+        if (musicService.listOfAllSongs.isEmpty()) return;
         if (isListReady) {
-            musicService.currentSong = musicService.listOfSongs.get(0);
+            musicService.currentSong = musicService.listOfAllSongs.get(0);
             musicService.sendNotification();
-            currentSongItem = musicService.listOfSongs.get(0);
+            currentSongItem = musicService.listOfAllSongs.get(0);
+            listOfAllSongs = musicService.listOfAllSongs;
         }
         else
             currentSongItem = musicService.currentSong;
@@ -490,6 +466,23 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         }
         isMute = !isMute;
         musicService.isMute = isMute;
+    }
+
+    private void addListFromExplorer(ArrayList<String> listOfSelectedSongs) {
+
+        for (ItemSongs itemSongs: listOfAllSongs) {
+            for (String path: listOfSelectedSongs){
+                if (!path.contains(".") && itemSongs.getAbsolutePath().startsWith(path)){
+                    listOfSongs.add(itemSongs);
+                } else if (path.contains(".") && itemSongs.getAbsolutePath().equals(path)) {
+                    listOfSongs.add(itemSongs);
+                }
+            }
+        }
+
+        adapterSongs.notifyDataSetChanged();
+
+        musicService.listOfSongs = (ArrayList<ItemSongs>) listOfSongs;
     }
 
     @Override
@@ -533,7 +526,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
 
             case R.id.muteButton: {
-                setMutedButton();
+//                setMutedButton();
+                Toast.makeText(this, "" + adapterSongs.listOfFiles.size(), Toast.LENGTH_SHORT).show();
                 break;
             }
 
@@ -542,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
 
             case R.id.floating_action_bar: {
-                Collections.shuffle(musicService.listOfSongs);
+                Collections.shuffle(musicService.listOfAllSongs);
 
                 musicService.setCurrentPos();
                 currentSongPosition = musicService.currentSongPos;
@@ -557,9 +551,6 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 openActivityPlaylistPage();
             }
         }
-    }
-
-    private void openExplorer() {
     }
 
     public void openPlaylistDialog() {
@@ -589,7 +580,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     public void openActivityPlaylistPage() {
         Intent intent = new Intent(this, ActivityPlaylistPage.class);
-        intent.putExtra("listOfSongs", (Serializable) listOfSongs);
+        intent.putExtra("listOfSongs", (Serializable) listOfAllSongs);
         startActivityForResult(intent, LAUNCH_PLAYLIST_ACTIVITY);
     }
 
@@ -603,6 +594,12 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
 
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Constants.ACTIVITY_ALIVE = true;
+    }
 
     private String formatTime(int position) {
         return String.format("%s:%s", fillNumber(position / 60), fillNumber(position % 60));
@@ -652,5 +649,18 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
         }
         return false;
+    }
+
+    private void changeStatusBarColor() {
+        Window window = getWindow();
+
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        // finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorStatusBar));
     }
 }

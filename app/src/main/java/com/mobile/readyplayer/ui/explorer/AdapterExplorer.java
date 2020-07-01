@@ -3,7 +3,6 @@ package com.mobile.readyplayer.ui.explorer;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
     private AdapterExplorerCallBack adapterExplorerCallBack;
     private List<ItemExplorer> listOfFiles;
     public ArrayList<ItemExplorer> listOfSelectedSongs;
-    private ArrayList<String> listOfSelected;
+    public ArrayList<String> listOfSelected;
     private Context context;
 
     public boolean isCheckAll;
@@ -64,22 +63,13 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 itemExplorer.setChecked(true);
             }
 
-            String mutablePath = Constants.MUTABLE_PATH.substring(0, Constants.MUTABLE_PATH.lastIndexOf('/'));
-            listOfSelected.add(mutablePath);
-//            listOfSelectedSongs.add(new ItemExplorer("dir", mutablePath.substring(mutablePath.lastIndexOf('/')), mutablePath));
+            listOfSelected.add(Constants.MUTABLE_PATH);
         } else {
             for (ItemExplorer itemExplorer: listOfFiles){
                 itemExplorer.setChecked(false);
             }
 
-//            listOfSelectedSongs.clear();
             listOfSelected.clear();
-        }
-
-        Log.d("test", "-----------------");
-
-        for (String path: listOfSelected){
-            Log.d("test", path);
         }
 
         adapterExplorerCallBack.showFloatingActionButton(listOfSelected.isEmpty());
@@ -103,12 +93,6 @@ public class AdapterExplorer extends RecyclerView.Adapter<AdapterExplorer.MyView
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (!isCheckAll) {
-
-//                        if (isChecked)
-//                            listOfSelectedSongs.add(listOfFiles.get(getAdapterPosition()));
-//                        else {
-//                            listOfSelectedSongs.remove(listOfFiles.get(getAdapterPosition()));
-//                        }
 
                         if (isChecked) {
                             listOfSelected.add(listOfFiles.get(getAdapterPosition()).absolutePath);

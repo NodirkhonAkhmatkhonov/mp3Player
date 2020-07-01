@@ -20,7 +20,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 
@@ -35,6 +34,7 @@ public class ServiceMusic extends Service{
 
     private MyBinder musicServiceBinder = new MyBinder();
 
+    public ArrayList<ItemSongs> listOfAllSongs;
     public ArrayList<ItemSongs> listOfSongs;
     public ItemSongs currentSong;
 
@@ -223,7 +223,6 @@ public class ServiceMusic extends Service{
         try {
             mediaPlayer = new MediaPlayer();
             if (!isFirstTime) {
-                Log.d("test", "is first time");
                 currentSong = listOfSongs.get(0);
                 isFirstTime = true;
             }
@@ -324,7 +323,7 @@ public class ServiceMusic extends Service{
     }
 
     public void findList() {
-        listOfSongs = new ArrayList<>();
+        listOfAllSongs = new ArrayList<>();
         Cursor audioCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null,
                 null,
@@ -344,9 +343,8 @@ public class ServiceMusic extends Service{
                 String path = audioCursor.getString(pathColumnId);
                 long duration = audioCursor.getLong(durationColumnId);
 //                String pathSong = audioCursor.getString(albumArt);
-//                Log.d("test", "Album_ID = " + pathSong);
 
-                listOfSongs.add(new ItemSongs(title, path, artist, duration));
+                listOfAllSongs.add(new ItemSongs(title, path, artist, duration));
             } while (audioCursor.moveToNext());
 
 

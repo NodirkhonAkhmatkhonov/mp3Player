@@ -2,8 +2,10 @@ package com.mobile.readyplayer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,7 @@ import java.util.List;
 
 public class AdapterSongs extends RecyclerView.Adapter<AdapterSongs.MyViewHolder> {
 
-    private List<ItemSongs> listOfFiles;
+    public List<ItemSongs> listOfFiles;
     private AdapterCallBack mAdapterCallBack;
     public int currentSongPos = 0;
     private Context context;
@@ -47,16 +49,8 @@ public class AdapterSongs extends RecyclerView.Adapter<AdapterSongs.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
-        final int position = i;
         myViewHolder.tvTitle.setText(listOfFiles.get(i).getTitle());
         myViewHolder.tvArtist.setText(listOfFiles.get(i).getArtist());
-
-        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapterCallBack.onMethodCallBack(position);
-            }
-        });
 
         if (i == currentSongPos) {
             myViewHolder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorSelectedSong));
@@ -76,12 +70,20 @@ public class AdapterSongs extends RecyclerView.Adapter<AdapterSongs.MyViewHolder
         private TextView tvTitle;
         private TextView tvArtist;
         private ImageView imPlayingState;
+        private ConstraintLayout layoutOfSong;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.title);
             tvArtist = itemView.findViewById(R.id.artist);
             imPlayingState = itemView.findViewById(R.id.playingState);
+            layoutOfSong = itemView.findViewById(R.id.layerOfSong);
+            layoutOfSong.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapterCallBack.onMethodCallBack(getAdapterPosition());
+                }
+            });
         }
     }
 }
