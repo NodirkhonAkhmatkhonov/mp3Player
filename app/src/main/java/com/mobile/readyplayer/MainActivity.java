@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,7 +40,7 @@ import android.widget.Toast;
 
 import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
-import com.mobile.readyplayer.ui.playlist.ActivityPlaylistPage;
+import com.mobile.readyplayer.ui.explorer.ActivityExplorerPage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -137,8 +136,10 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
                 addListFromExplorer(resultList);
                 adapterSongs.notifyDataSetChanged();
+                onBottomSheetArrowClicked();
             }
         }
+
     }
 
     @Override
@@ -279,20 +280,24 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         tvPlaylistName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isExpand) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    icDirection.setImageResource(R.drawable.ic_arrow_downward_white_24dp);
-                    fabAdd.show();
-                }
-                else {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    icDirection.setImageResource(R.drawable.ic_arrow_upward_white_24dp);
-                    fabAdd.hide();
-                }
-
-                isExpand = !isExpand;
+                onBottomSheetArrowClicked();
             }
         });
+    }
+
+    private void onBottomSheetArrowClicked() {
+        if (!isExpand) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            icDirection.setImageResource(R.drawable.ic_arrow_downward_white_24dp);
+            fabAdd.show();
+        }
+        else {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            icDirection.setImageResource(R.drawable.ic_arrow_upward_white_24dp);
+            fabAdd.hide();
+        }
+
+        isExpand = !isExpand;
     }
 
     private void initReceiver() {
@@ -500,6 +505,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         currentSongPosition = position;
         musicService.setMusic(position);
+
+        // if any song is selected, then the bottom sheet will come to the collapsed state
+        onBottomSheetArrowClicked();
     }
 
     @Override
@@ -526,8 +534,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
 
             case R.id.muteButton: {
-//                setMutedButton();
-                Toast.makeText(this, "" + adapterSongs.listOfFiles.size(), Toast.LENGTH_SHORT).show();
+                setMutedButton();
                 break;
             }
 
@@ -579,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     }
 
     public void openActivityPlaylistPage() {
-        Intent intent = new Intent(this, ActivityPlaylistPage.class);
+        Intent intent = new Intent(this, ActivityExplorerPage.class);
         intent.putExtra("listOfSongs", (Serializable) listOfAllSongs);
         startActivityForResult(intent, LAUNCH_PLAYLIST_ACTIVITY);
     }

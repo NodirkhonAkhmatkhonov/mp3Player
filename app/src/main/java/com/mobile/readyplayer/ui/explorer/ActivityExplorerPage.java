@@ -1,4 +1,4 @@
-package com.mobile.readyplayer.ui.playlist;
+package com.mobile.readyplayer.ui.explorer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,22 +21,19 @@ import com.mobile.readyplayer.ItemSongs;
 import com.mobile.readyplayer.R;
 import com.mobile.readyplayer.base.BaseActivity;
 import com.mobile.readyplayer.ui.ItemExplorer;
-import com.mobile.readyplayer.ui.explorer.AdapterExplorer;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ActivityPlaylistPage extends BaseActivity implements AdapterExplorerCallBack, View.OnClickListener {
+public class ActivityExplorerPage extends BaseActivity implements AdapterExplorerCallBack, View.OnClickListener {
 
     public ArrayList<ItemSongs> listOfSongs;
     public ArrayList<ItemSongs> listOfSelectedSongs;
     public ArrayList<ItemSongs> listOfFinalSelectedSongs;
     private ArrayList<String> listOfFormats;
     private List<ItemExplorer> listOfFiles;
-
-    public boolean isCheckAllBoxOn;
 
     private FloatingActionButton floatingActionButton;
     private CheckBox checkBoxCheckAll;
@@ -50,6 +48,17 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_explorer, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.close_page:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -77,7 +86,7 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ActivityPlaylistPage.this, "" + adapterExplorer.listOfSelected.size(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActivityExplorerPage.this, "" + adapterExplorer.listOfSelected.size(), Toast.LENGTH_SHORT).show();
             }
         });
         initializeFormats();
@@ -195,21 +204,6 @@ public class ActivityPlaylistPage extends BaseActivity implements AdapterExplore
             case R.id.floating_action_button: {
                 sendListBack();
                 break;
-            }
-        }
-    }
-
-    private void makeFinalSongList() {
-
-        listOfFinalSelectedSongs.clear();
-
-        for (ItemSongs itemSongs: listOfSongs) {
-            for (ItemExplorer itemExplorer: adapterExplorer.listOfSelectedSongs){
-                if (itemExplorer.fileType.equals("dir") && itemSongs.getAbsolutePath().startsWith(itemExplorer.getAbsolutePath())){
-                    listOfFinalSelectedSongs.add(itemSongs);
-                } else if (!itemExplorer.fileType.equals("dir") && itemSongs.getAbsolutePath().equals(itemExplorer.getAbsolutePath())){
-                    listOfFinalSelectedSongs.add(itemSongs);
-                }
             }
         }
     }

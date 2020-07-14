@@ -16,7 +16,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         >
         <activity android:name=".ActivitySearchPage"/>
-        <activity android:name=".ui.playlist.ActivityPlaylistPage"/>
+        <activity android:name=".ui.explorer.ActivityExplorerPage"/>
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"

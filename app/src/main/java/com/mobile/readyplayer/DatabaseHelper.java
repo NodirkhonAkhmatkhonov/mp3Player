@@ -34,6 +34,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean addPlaylist() {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL2, );
+        return true;
     }
 }
