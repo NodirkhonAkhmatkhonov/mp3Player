@@ -12,14 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class DialogPlaylist extends AppCompatDialogFragment {
     private EditText editText;
     private Context context;
 
     public interface OnInputListener {
-        void sendInPut(String input);
+        void addPlaylistSong(String newEntry);
     }
 
     public OnInputListener mOnInputListener;
@@ -56,7 +55,7 @@ public class DialogPlaylist extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String playListName = editText.getText().toString().trim();
                         if (!playListName.isEmpty()) {
-                            mOnInputListener.sendInPut(playListName);
+                            mOnInputListener.addPlaylistSong(playListName);
                         } else {
                             editText.setError("Field can't be blank!");
                         }

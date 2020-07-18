@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +28,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +52,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements DialogPlaylist.OnInputListener, AdapterCallBack, View.OnClickListener, DialogRemovePlaylist.OnInputListener {
 
+    private String TAG = "test";
+
     private BroadcastReceiver receiverMain;
 
     private ServiceMusic musicService = null;
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     private List<ItemSongs> listOfSongs;
     private List<ItemSongs> listOfAllSongs;
-    public List<ItemPlaylist> listOfPlaylists;
+    public ArrayList<String> listOfPlaylists;
 
     private ItemSongs currentSongItem;
 
@@ -103,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private NotificationReceiver notificationReceiver = null;
 
     private BottomSheetBehavior bottomSheetBehavior;
+
+    DatabaseHelper mDatabaseHelper;
 
     @Override
     public void onBackPressed() {
@@ -204,6 +211,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
         tvArtist = findViewById(R.id.songArtistPanel);
         tvDuration = findViewById(R.id.duration);
         tvCurrentPoint = findViewById(R.id.currentPoint);
+
+        // registering database
+        mDatabaseHelper = new DatabaseHelper(this);
 
         recyclerViewPlaylists = header.findViewById(R.id.recyclerViewPlaylist);
 
@@ -343,11 +353,34 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         listOfPlaylists = new ArrayList<>();
 
-        listOfPlaylists.add(new ItemPlaylist("Default"));
+//        listOfPlaylists.add(new ItemPlaylist("All"));
+        addPlaylistFromDB();
 
         adapterPlaylist = new AdapterPlaylist(listOfPlaylists, this);
         recyclerViewPlaylists.setAdapter(adapterPlaylist);
     }
+
+    private void addPlaylistFromDB() {
+        Cursor data = mDatabaseHelper.getData(DatabaseHelper.TABLE_PLAYLISTS);
+
+        while (data.moveToNext()) {
+            listOfPlaylists.add(data.getString(DatabaseHelper.DATABASE_VERSION));
+        }
+    }
+
+    private void getDataFromDB() {
+        Cursor data = mDatabaseHelper.getData(DatabaseHelper.TABLE_PLAYLISTS);
+
+        ArrayList<String> listData = new ArrayList<>();
+        while (data.moveToNext()) {
+            listData.add(data.getString(1));
+        }
+
+        for (String name: listData) {
+            Log.d("test", "get = " + name);
+        }
+    }
+
 
     private void setPlayButton(boolean doIPlay) {
         if (doIPlay) {
@@ -475,6 +508,11 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     private void addListFromExplorer(ArrayList<String> listOfSelectedSongs) {
 
+        if (listOfSelectedSongs.isEmpty()) {
+            Toast.makeText(this, "No song is chosen!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for (ItemSongs itemSongs: listOfAllSongs) {
             for (String path: listOfSelectedSongs){
                 if (!path.contains(".") && itemSongs.getAbsolutePath().startsWith(path)){
@@ -534,7 +572,9 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             }
 
             case R.id.muteButton: {
-                setMutedButton();
+
+                getDataFromDB();
+//                setMutedButton();
                 break;
             }
 
@@ -571,12 +611,15 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     }
 
     @Override
-    public void sendInPut(String input) {
-        listOfPlaylists.add(new ItemPlaylist(input));
+    public void addPlaylistSong(String newEntry) {
+        listOfPlaylists.add(newEntry);
         adapterPlaylist.listOfPlaylists = listOfPlaylists;
         adapterPlaylist.notifyDataHasChanged();
 
-        Toast.makeText(musicService, "Playlist " + input + " is created successfully!", Toast.LENGTH_SHORT).show();
+        // adding playlist name into database
+        boolean insertData = mDatabaseHelper.addPlaylistName(newEntry);
+
+        Toast.makeText(this, newEntry + " is " + insertData , Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -593,7 +636,13 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
     @Override
     public void removePlayListItem() {
+        // deleting from database
+        mDatabaseHelper.remove(DatabaseHelper.TABLE_PLAYLISTS, DatabaseHelper.PLAYLISTS_NAME, adapterPlaylist.removablePlaylistName());
+
+        // deleteing from adapter
         adapterPlaylist.removePlayListItem();
+        adapterPlaylist.notifyDataSetChanged();
+
     }
 
 

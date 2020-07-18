@@ -2,28 +2,22 @@ package com.mobile.readyplayer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.mobile.readyplayer.ui.ItemPlaylist;
-
-import org.w3c.dom.Text;
-
-import java.util.List;
+import java.util.ArrayList;
 
 public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyViewHolder> {
 
-    public List<ItemPlaylist> listOfPlaylists;
+    public ArrayList<String> listOfPlaylists;
     private AdapterCallBack mAdapterCallBack;
     private Context context;
 
-    private int removableItemIndex = -1;
+    private String removablePlaylistItem = "";
 
     @NonNull
     @Override
@@ -33,7 +27,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
         return myViewHolder;
     }
 
-    public AdapterPlaylist(List<ItemPlaylist> listOfPlaylists, Context context) {
+    public AdapterPlaylist(ArrayList<String> listOfPlaylists, Context context) {
         this.listOfPlaylists = listOfPlaylists;
         mAdapterCallBack = (AdapterCallBack) context;
         this.context = context;
@@ -44,8 +38,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
     }
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
-        final int index = i;
-        myViewHolder.playlistName.setText(listOfPlaylists.get(i).getName());
+        myViewHolder.playlistName.setText(listOfPlaylists.get(i));
         myViewHolder.playlistName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,16 +49,20 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
         myViewHolder.ivRemovePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removableItemIndex = index;
+                removablePlaylistItem = myViewHolder.playlistName.getText().toString();
                 ((MainActivity)context).openRemovePlaylistDialog();
             }
         });
     }
 
     public void removePlayListItem() {
-        listOfPlaylists.remove(removableItemIndex);
+        listOfPlaylists.remove(removablePlaylistItem);
         ((MainActivity)context).listOfPlaylists = listOfPlaylists;
         notifyDataHasChanged();
+    }
+
+    public String removablePlaylistName() {
+        return removablePlaylistItem;
     }
 
     @Override
