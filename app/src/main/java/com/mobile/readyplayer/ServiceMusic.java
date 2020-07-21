@@ -15,9 +15,10 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
@@ -114,9 +115,15 @@ public class ServiceMusic extends Service{
                         "play", actionPlayIntent)
                 .addAction(R.drawable.ic_skip_next_white_24dp, "next", actionNextIntent)
                 .addAction(R.drawable.ic_close_black_24dp, "close", actionCloseIntent)
-                .setStyle(new android.support.v4.media.app.NotificationCompat.DecoratedMediaCustomViewStyle()
-                        .setShowActionsInCompactView(1, 2, 3)
-                        .setMediaSession(mediaSessionCompat.getSessionToken()))
+                .setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle()
+                        .setMediaSession(mediaSessionCompat.getSessionToken())
+//                        .makeBigContentView()
+//                        .setCustomContentView(remoteViews)
+//                        .setCustomBigContentView(bigRemoteViews)
+                        .setShowActionsInCompactView(1, 2, 3))
+//                .setStyle(new NotificationCompat.DecoratedMediaCustomViewStyle()
+//                        .setShowActionsInCompactView(1, 2, 3)
+//                        .setMediaSession(mediaSessionCompat.getSessionToken()))
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)
                 .build();
@@ -208,13 +215,18 @@ public class ServiceMusic extends Service{
             targetPosition = currentSongPos == listOfSongs.size() - 1 ? 0 : currentSongPos + 1;
         }
         setMusic(targetPosition);
-        currentSongPos = targetPosition;
     }
 
     public void setMusic(int position) {
         currentSong = listOfSongs.get(position);
-        makeMediaPlayer();
         currentSongPos = position;
+        makeMediaPlayer();
+    }
+
+    public void setPlaylist(ArrayList<ItemSongs> list) {
+        listOfSongs = list;
+        currentSong = listOfSongs.get(0);
+        currentSongPos = 0;
     }
 
     public void makeMediaPlayer() {
@@ -243,9 +255,6 @@ public class ServiceMusic extends Service{
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-//                    Intent intent = new Intent(Constants.MAIN_ACTION);
-//                    intent.putExtra("type", Constants.SERVICE_ON_SONG_COMPLETED);
-//                    sendBroadcast(intent);
 
                     if (isRepeated) {
                         playMusic();
@@ -359,6 +368,12 @@ public class ServiceMusic extends Service{
         /// might also change. In order to keep the first position, is checked for if the app is ran for the first time.
         if (isFirstTime)
         currentSongPos = listOfSongs.indexOf(currentSong);
+    }
+
+    public ArrayList<ItemSongs> getListOfAllSongs() {
+        Log.d("test", "size in service = " + listOfAllSongs.size());
+
+        return listOfAllSongs;
     }
 
     /// This method is a one-time-called method when the list of all songs is ready. It broadcasts it to receivers.

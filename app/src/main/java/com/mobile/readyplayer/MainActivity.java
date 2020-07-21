@@ -11,23 +11,22 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +40,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mobile.readyplayer.ui.ItemPlaylist;
 import com.mobile.readyplayer.ui.notification.NotificationReceiver;
 import com.mobile.readyplayer.ui.explorer.ActivityExplorerPage;
 
@@ -53,6 +51,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements DialogPlaylist.OnInputListener, AdapterCallBack, View.OnClickListener, DialogRemovePlaylist.OnInputListener {
 
     private String TAG = "test";
+
+    private String currentPlaylist = "Nodirkhon";
 
     private BroadcastReceiver receiverMain;
 
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     private TextView tvDuration;
     private TextView tvCurrentPoint;
     private TextView tvPlaylistName;
+    private TextView tvBottomSheetPlaylistName;
 
     private SeekBar ivSeekbar;
 
@@ -144,9 +145,16 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                 addListFromExplorer(resultList);
                 adapterSongs.notifyDataSetChanged();
                 onBottomSheetArrowClicked();
+
+//                 Write songs inside the list
+                addNewSongToDB(currentPlaylist, resultList);
+
             }
         }
+    }
 
+    private void addNewSongToDB(String playlist, ArrayList<String> list) {
+        mDatabaseHelper.addNewSong(playlist, list);
     }
 
     @Override
@@ -227,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         notificationReceiver = new NotificationReceiver();
 
+        // Registering notification receiver
         IntentFilter callInterceptorIntentFilter = new IntentFilter("android.intent.action.ANY_ACTION");
         registerReceiver(notificationReceiver,  callInterceptorIntentFilter);
 
@@ -240,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             initReceiver();
         }
 
+        // registering notification receiver
         registerMyReceiver();
 
         ivSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -353,31 +363,48 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         listOfPlaylists = new ArrayList<>();
 
-//        listOfPlaylists.add(new ItemPlaylist("All"));
-        addPlaylistFromDB();
-
         adapterPlaylist = new AdapterPlaylist(listOfPlaylists, this);
         recyclerViewPlaylists.setAdapter(adapterPlaylist);
+
+        addPlaylistFromDB();
     }
 
     private void addPlaylistFromDB() {
-        Cursor data = mDatabaseHelper.getData(DatabaseHelper.TABLE_PLAYLISTS);
+        Cursor data = mDatabaseHelper.getPlaylists(DatabaseHelper.TABLE_PLAYLISTS);
 
         while (data.moveToNext()) {
             listOfPlaylists.add(data.getString(DatabaseHelper.DATABASE_VERSION));
         }
+
+        if (listOfPlaylists.size() == 0) {
+            addNewPlaylist("Default");
+        }
+
+        currentPlaylist = listOfPlaylists.get(0);
+        Toast.makeText(this, "" + currentPlaylist, Toast.LENGTH_SHORT).show();
+
+        listOfPlaylists.add(0, "All");
     }
 
-    private void getDataFromDB() {
-        Cursor data = mDatabaseHelper.getData(DatabaseHelper.TABLE_PLAYLISTS);
+    private void fakeGetSongFromDB() {
+        Cursor data = mDatabaseHelper.getSongs(currentPlaylist);
+
+        while (data.moveToNext()) {
+            Log.d("test", data.getString(DatabaseHelper.SONGS_ID_PATH));
+        }
+
+    }
+
+    private void fakeGetPlaylistFromDB() {
+        Cursor data = mDatabaseHelper.getPlaylists(DatabaseHelper.TABLE_PLAYLISTS);
 
         ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
-            listData.add(data.getString(1));
+            listData.add(data.getString(DatabaseHelper.PLAYLIST_ID_NAME));
         }
 
         for (String name: listData) {
-            Log.d("test", "get = " + name);
+            Log.d("test", "playlist = " + name);
         }
     }
 
@@ -409,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
                     case Constants.SERVICE_CURRENT_SONG_DETAIL: {
                         updateInfoSong(false);
 
-//                        adapterSongs.changeCurrentSongPos(listOfSongs.indexOf(currentSongItem));
+                        Toast.makeText(context, "Detail", Toast.LENGTH_SHORT).show();
                         adapterSongs.changeCurrentSongPos(currentSongPosition);
                         isPlaying = false;
                         setPlayButton(true);
@@ -445,6 +472,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         IntentFilter filter = new IntentFilter(Constants.MAIN_ACTION);
         registerReceiver(receiverMain, filter);
+
     }
 
     private void onClosePressed() {
@@ -513,19 +541,46 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
             return;
         }
 
+        listOfAllSongs = musicService.getListOfAllSongs();
+
+        Log.d(TAG, "All songs");
         for (ItemSongs itemSongs: listOfAllSongs) {
-            for (String path: listOfSelectedSongs){
-                if (!path.contains(".") && itemSongs.getAbsolutePath().startsWith(path)){
+            Log.d(TAG, itemSongs.getAbsolutePath());
+        }
+
+        Log.d(TAG, "Selected songs");
+        for (String path: listOfSelectedSongs) {
+            Log.d(TAG, path);
+        }
+
+//
+//        ArrayList<ItemSongs> tempList = new ArrayList<>();
+
+        for (String path: listOfSelectedSongs) {
+            for (ItemSongs itemSongs: listOfAllSongs) {
+                if (!path.contains(".") && itemSongs.getAbsolutePath().startsWith(path) && listOfSongs.indexOf(itemSongs) == -1) {
+//                    tempList.add(itemSongs);
                     listOfSongs.add(itemSongs);
-                } else if (path.contains(".") && itemSongs.getAbsolutePath().equals(path)) {
+                    Log.d(TAG, "Folder");
+                } else if (path.contains(".") && itemSongs.getAbsolutePath().equals(path) && listOfSongs.indexOf(itemSongs) == -1) {
+//                    tempList.add(itemSongs);
                     listOfSongs.add(itemSongs);
+                    Log.d(TAG, "Music");
                 }
             }
         }
 
+//        Log.d(TAG, "From explorer size = " + tempList.size());
+//
+//        for (ItemSongs itemSongs : tempList) {
+//            if (listOfSongs.indexOf(itemSongs) == -1)
+//                listOfSongs.add(itemSongs);
+//        }
+//        listOfSongs.addAll(tempList);
+
         adapterSongs.notifyDataSetChanged();
 
-        musicService.listOfSongs = (ArrayList<ItemSongs>) listOfSongs;
+        musicService.setPlaylist((ArrayList<ItemSongs>) listOfSongs);
     }
 
     @Override
@@ -546,6 +601,29 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
         // if any song is selected, then the bottom sheet will come to the collapsed state
         onBottomSheetArrowClicked();
+    }
+
+    @Override
+    public void changePlaylist(String playlist) {
+
+        if (playlist.equals("All")) {
+            currentPlaylist = playlist;
+            tvPlaylistName.setText(playlist);
+
+            listOfSongs = listOfAllSongs;
+
+            adapterSongs.listOfFiles = listOfAllSongs;
+            adapterSongs.notifyDataSetChanged();
+
+            setNewPlaylistToService();
+        }
+
+        Toast.makeText(this, currentPlaylist, Toast.LENGTH_SHORT).show();
+//        Cursor data = mDatabaseHelper.getPlaylists(DatabaseHelper.TABLE_PLAYLISTS);
+    }
+
+    private void setNewPlaylistToService() {
+        musicService.setPlaylist((ArrayList<ItemSongs>) listOfSongs);
     }
 
     @Override
@@ -573,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
             case R.id.muteButton: {
 
-                getDataFromDB();
+                fakeGetSongFromDB();
 //                setMutedButton();
                 break;
             }
@@ -611,21 +689,11 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     }
 
     @Override
-    public void addPlaylistSong(String newEntry) {
+    public void addNewPlaylist(String newEntry) {
         listOfPlaylists.add(newEntry);
-        adapterPlaylist.listOfPlaylists = listOfPlaylists;
         adapterPlaylist.notifyDataHasChanged();
 
-        // adding playlist name into database
-        boolean insertData = mDatabaseHelper.addPlaylistName(newEntry);
-
-        Toast.makeText(this, newEntry + " is " + insertData , Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Constants.ACTIVITY_ALIVE = false;
+        mDatabaseHelper.addPlaylist(newEntry);
     }
 
     public void openActivityPlaylistPage() {
@@ -637,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
     @Override
     public void removePlayListItem() {
         // deleting from database
-        mDatabaseHelper.remove(DatabaseHelper.TABLE_PLAYLISTS, DatabaseHelper.PLAYLISTS_NAME, adapterPlaylist.removablePlaylistName());
+        mDatabaseHelper.removePlaylistItem(DatabaseHelper.TABLE_PLAYLISTS, DatabaseHelper.PLAYLISTS_NAME, adapterPlaylist.removablePlaylistName());
 
         // deleteing from adapter
         adapterPlaylist.removePlayListItem();
@@ -651,10 +719,20 @@ public class MainActivity extends AppCompatActivity implements DialogPlaylist.On
 
 
 
+
     @Override
     protected void onStart() {
         super.onStart();
         Constants.ACTIVITY_ALIVE = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+//        mDatabaseHelper.setLastPlaylist();
+
+        Constants.ACTIVITY_ALIVE = false;
     }
 
     private String formatTime(int position) {

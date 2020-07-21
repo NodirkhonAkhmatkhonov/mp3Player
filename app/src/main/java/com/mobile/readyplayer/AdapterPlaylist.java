@@ -1,8 +1,8 @@
 package com.mobile.readyplayer;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +28,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
     }
 
     public AdapterPlaylist(ArrayList<String> listOfPlaylists, Context context) {
+        this.listOfPlaylists = new ArrayList<>();
         this.listOfPlaylists = listOfPlaylists;
         mAdapterCallBack = (AdapterCallBack) context;
         this.context = context;
@@ -42,7 +43,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
         myViewHolder.playlistName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)context).openActivityPlaylistPage();
+                mAdapterCallBack.changePlaylist(myViewHolder.playlistName.getText().toString());
             }
         });
 
@@ -50,6 +51,8 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.MyView
             @Override
             public void onClick(View v) {
                 removablePlaylistItem = myViewHolder.playlistName.getText().toString();
+
+                if (!removablePlaylistItem.equals("All"))
                 ((MainActivity)context).openRemovePlaylistDialog();
             }
         });

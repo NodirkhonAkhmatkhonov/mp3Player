@@ -4,8 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialogFragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,7 +18,7 @@ public class DialogPlaylist extends AppCompatDialogFragment {
     private Context context;
 
     public interface OnInputListener {
-        void addPlaylistSong(String newEntry);
+        void addNewPlaylist(String newEntry);
     }
 
     public OnInputListener mOnInputListener;
@@ -55,7 +55,7 @@ public class DialogPlaylist extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String playListName = editText.getText().toString().trim();
                         if (!playListName.isEmpty()) {
-                            mOnInputListener.addPlaylistSong(playListName);
+                            mOnInputListener.addNewPlaylist(playListName);
                         } else {
                             editText.setError("Field can't be blank!");
                         }
